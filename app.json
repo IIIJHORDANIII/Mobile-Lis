@@ -1,4 +1,7 @@
 {
   "name": "LisMobile",
-  "slug": "LisMobile"
+  "slug": "LisMobile",
+  "plugins": [
+    "expo-font"
+  ]
 }
