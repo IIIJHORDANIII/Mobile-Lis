@@ -26,11 +26,9 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log('Request:', config.method?.toUpperCase(), config.url, config.data);
     return config;
   },
   (error) => {
-    console.error('Request Error:', error);
     return Promise.reject(error);
   }
 );
@@ -38,7 +36,6 @@ api.interceptors.request.use(
 // Add a response interceptor to handle errors
 api.interceptors.response.use(
   (response) => {
-    console.log('Response:', response.status, response.data);
     return response;
   },
   async (error) => {
@@ -48,21 +45,17 @@ api.interceptors.response.use(
       await AsyncStorage.removeItem('@LisMobile:user');
       // You might want to navigate to login screen here
     }
-    console.error('Response Error:', error.response?.status, error.response?.data);
     return Promise.reject(error);
   }
 );
 
 export const login = async (email: string, password: string) => {
   try {
-    console.log('Attempting login with:', { email });
     const response = await api.post('/api/login', { email, password });
     const { token, user } = response.data;
     await AsyncStorage.setItem('@LisMobile:token', token);
-    console.log('Login successful, token stored');
     return { token, user };
   } catch (error: any) {
-    console.error('Login error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -71,9 +64,7 @@ export const logout = async () => {
   try {
     await AsyncStorage.removeItem('@LisMobile:token');
     await AsyncStorage.removeItem('@LisMobile:user');
-    console.log('Logout successful, token removed');
   } catch (error) {
-    console.error('Error during logout:', error);
   }
 };
 
@@ -82,7 +73,6 @@ export const getTasks = async () => {
     const response = await api.get('/api/tasks');
     return response.data;
   } catch (error) {
-    console.error('Error fetching tasks:', error);
     throw error;
   }
 };
@@ -92,7 +82,6 @@ export const createTask = async (taskData: any) => {
     const response = await api.post('/api/tasks', taskData);
     return response.data;
   } catch (error) {
-    console.error('Error creating task:', error);
     throw error;
   }
 };
@@ -103,7 +92,6 @@ export const getProducts = async (): Promise<Product[]> => {
     const response = await api.get('/api/products');
     return response.data;
   } catch (error) {
-    console.error('Error fetching products:', error);
     throw error;
   }
 };
@@ -117,7 +105,6 @@ export const createProduct = async (productData: FormData): Promise<Product> => 
     });
     return response.data;
   } catch (error) {
-    console.error('Error creating product:', error);
     throw error;
   }
 };
@@ -127,7 +114,6 @@ export const updateProduct = async (id: string, productData: Partial<Product>): 
     const response = await api.put(`/api/products/${id}`, productData);
     return response.data;
   } catch (error) {
-    console.error('Error updating product:', error);
     throw error;
   }
 };
@@ -136,7 +122,6 @@ export const deleteProduct = async (id: string): Promise<void> => {
   try {
     await api.delete(`/api/products/${id}`);
   } catch (error) {
-    console.error('Error deleting product:', error);
     throw error;
   }
 };
@@ -147,7 +132,6 @@ export const getCustomLists = async (): Promise<CustomList[]> => {
     const response = await api.get('/api/custom-lists');
     return response.data;
   } catch (error) {
-    console.error('Error fetching custom lists:', error);
     throw error;
   }
 };
@@ -163,7 +147,6 @@ export const createCustomList = async (listData: {
     const response = await api.post('/api/custom-lists', listData);
     return response.data;
   } catch (error) {
-    console.error('Error creating custom list:', error);
     throw error;
   }
 };
@@ -172,7 +155,6 @@ export const shareCustomList = async (listId: string, userIds: string[]): Promis
   try {
     await api.post(`/api/custom-lists/${listId}/share`, { userIds });
   } catch (error) {
-    console.error('Error sharing custom list:', error);
     throw error;
   }
 };
@@ -183,7 +165,6 @@ export const getAllUsers = async (): Promise<User[]> => {
     const response = await api.get('/api/users');
     return response.data;
   } catch (error) {
-    console.error('Error fetching users:', error);
     throw error;
   }
 };
@@ -197,7 +178,6 @@ export const register = async (userData: {
     const response = await api.post('/api/register', userData);
     return response.data;
   } catch (error) {
-    console.error('Error registering user:', error);
     throw error;
   }
 };
@@ -211,7 +191,6 @@ export const createAdmin = async (userData: {
     const response = await api.post('/api/admin', userData);
     return response.data;
   } catch (error) {
-    console.error('Error creating admin:', error);
     throw error;
   }
 };
@@ -222,7 +201,6 @@ export const getSales = async (): Promise<Sale[]> => {
     const response = await api.get('/api/sales');
     return response.data;
   } catch (error) {
-    console.error('Error fetching sales:', error);
     throw error;
   }
 };
@@ -234,7 +212,6 @@ export const createSale = async (saleData: {
     const response = await api.post('/api/sales', saleData);
     return response.data;
   } catch (error) {
-    console.error('Error creating sale:', error);
     throw error;
   }
 };
@@ -244,7 +221,6 @@ export const getSalesSummary = async (): Promise<any> => {
     const response = await api.get('/api/sales/summary');
     return response.data;
   } catch (error) {
-    console.error('Error fetching sales summary:', error);
     throw error;
   }
 };
@@ -260,7 +236,6 @@ export const updateCustomList = async (listId: string, listData: {
     const response = await api.put(`/api/custom-lists/${listId}`, listData);
     return response.data;
   } catch (error) {
-    console.error('Error updating custom list:', error);
     throw error;
   }
 };
@@ -270,7 +245,6 @@ export const addProductToList = async (listId: string, productId: string): Promi
     const response = await api.post(`/api/custom-lists/${listId}/products/${productId}`);
     return response.data;
   } catch (error) {
-    console.error('Error adding product to list:', error);
     throw error;
   }
 };
@@ -280,7 +254,6 @@ export const removeProductFromList = async (listId: string, productId: string): 
     const response = await api.delete(`/api/custom-lists/${listId}/products/${productId}`);
     return response.data;
   } catch (error) {
-    console.error('Error removing product from list:', error);
     throw error;
   }
 };

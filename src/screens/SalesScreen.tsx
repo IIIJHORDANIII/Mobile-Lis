@@ -97,7 +97,9 @@ const SalesScreen = () => {
         const salesCount: Sales = {};
         userSales.forEach((sale: Sale) => {
           sale.products.forEach((product: any) => {
-            salesCount[product.productId] = (salesCount[product.productId] || 0) + product.quantity;
+            // Garante que o ID é sempre string
+            const id = typeof product.productId === 'object' ? product.productId._id : product.productId;
+            salesCount[id] = (salesCount[id] || 0) + product.quantity;
           });
         });
         
@@ -113,23 +115,9 @@ const SalesScreen = () => {
     if (!product) return;
   
     const currentQuantity = sales[productId] || 0;
-    // Remover Math.max para permitir devoluções
+    if (!increment && currentQuantity === 0) return; // Não permite devolução abaixo de zero
     const newQuantity = increment ? currentQuantity + 1 : currentQuantity - 1;
     
-    console.log('Debug - handleQuantityChange:', {
-      productId,
-      increment,
-      currentQuantity,
-      newQuantity,
-      user: user?._id
-    });
-    
-    // Remover esta condição que impede devoluções
-    // if (newQuantity === currentQuantity) {
-    //   console.log('Debug - Quantidade não mudou, retornando');
-    //   return;
-    // }
-  
     setProcessingProduct(productId);
     
     try {
@@ -141,9 +129,7 @@ const SalesScreen = () => {
         total: increment ? product.price : -product.price
       };
   
-      console.log('Debug - Enviando dados:', saleData);
       const response = await api.post('/api/sales', saleData);
-      console.log('Debug - Resposta do backend:', response.data);
       
       // Atualizar o estado local
       setSales(prevSales => ({
@@ -166,6 +152,20 @@ const SalesScreen = () => {
     } finally {
       setProcessingProduct(null);
     }
+
+    // Validação extra: impedir quantidade ou total negativos
+    if (increment && product.price < 0) {
+      setError('Preço do produto não pode ser negativo.');
+      setTimeout(() => setError(''), 3000);
+      setProcessingProduct(null);
+      return;
+    }
+    if (!increment && (currentQuantity <= 0 || product.price < 0)) {
+      setError('Não é possível devolver mais do que foi vendido ou preço negativo.');
+      setTimeout(() => setError(''), 3000);
+      setProcessingProduct(null);
+      return;
+    }
   };
 
   // Calcular totais usando dados do backend
@@ -179,13 +179,6 @@ const SalesScreen = () => {
     // Calcular quantidade total usando os dados atuais do estado
     Object.values(sales).forEach(quantity => {
       totalQuantity += Math.max(0, quantity); // Garantir que não seja negativo
-    });
-    
-    console.log('Debug - Totais calculados:', {
-      totalQuantity,
-      totalSubtotal,
-      salesState: sales,
-      allSalesCount: allSales.length
     });
     
     return { totalQuantity, totalSubtotal };
@@ -217,7 +210,7 @@ const SalesScreen = () => {
                 <Text style={styles.summaryValue}>{totalQuantity}</Text>
               </View>
               <View style={styles.summaryItem}>
-                <Text style={styles.summaryLabel}>Total (Backend):</Text>
+                <Text style={styles.summaryLabel}>Total:</Text>
                 <Text style={styles.summaryValue}>R$ {totalSubtotal.toFixed(2)}</Text>
               </View>
             </View>
@@ -270,7 +263,7 @@ const SalesScreen = () => {
                       <TouchableOpacity
                         style={[styles.actionButton, styles.removeButton]}
                         onPress={() => handleQuantityChange(product._id, false)}
-                        disabled={isProcessing} // Remove: quantity === 0 ||
+                        disabled={quantity === 0 || isProcessing}
                       >
                         <Text style={styles.removeButtonText}>-</Text>
                       </TouchableOpacity>
