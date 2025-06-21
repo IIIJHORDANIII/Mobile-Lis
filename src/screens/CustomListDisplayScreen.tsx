@@ -51,18 +51,21 @@ export default function CustomListDisplayScreen() {
   const loadList = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/api/custom-lists/${listId}`);
+      const response = await api.get(`/custom-lists/${listId}`);
       setList(response.data);
-      setError('');
-    } catch (err: any) {
-      console.error('Error loading list:', err);
-      if (err.response?.status === 404) {
-        setError('Lista não encontrada');
-      } else if (err.response?.status === 403) {
-        setError('Sem permissão para acessar esta lista');
-      } else {
-        setError('Erro ao carregar lista');
+      
+      // Carregar produtos da lista
+      if (response.data.products && response.data.products.length > 0) {
+        const productsResponse = await api.get('/products');
+        const allProducts = productsResponse.data;
+        const listProducts = allProducts.filter((product: Product) => 
+          response.data.products.includes(product._id)
+        );
+        setProducts(listProducts);
       }
+    } catch (error: any) {
+      console.error('Erro ao carregar lista:', error);
+      setError('Erro ao carregar lista');
     } finally {
       setLoading(false);
     }

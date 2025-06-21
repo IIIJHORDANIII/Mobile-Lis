@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       const { token, user: userData } = await apiLogin(email, password);
+      await AsyncStorage.setItem('@LisMobile:token', token);
       await AsyncStorage.setItem('@LisMobile:user', JSON.stringify(userData));
       setUser(userData);
     } catch (error) {

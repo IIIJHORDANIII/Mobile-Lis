@@ -71,13 +71,13 @@ const SalesScreen = () => {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/products'); // Corrigido: adicionado /api
+      const response = await api.get('/products');
       const productsWithCommission = response.data.map((product: Product) => ({
         ...product,
         commission: product.commission || (product.price * 0.3)
       }));
       setProducts(productsWithCommission);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao carregar produtos:', error);
       setError('Erro ao carregar produtos');
     } finally {
@@ -88,7 +88,7 @@ const SalesScreen = () => {
   const loadSales = async () => {
     try {
       if (user?._id) {
-        const salesResponse = await api.get('/api/sales'); // Adicionado /api
+        const salesResponse = await api.get('/sales');
         const userSales = salesResponse.data.filter((sale: Sale) => sale.userId === user._id);
         
         // Armazenar todas as vendas para calcular o total do backend
@@ -105,8 +105,9 @@ const SalesScreen = () => {
         
         setSales(salesCount);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao carregar vendas:', error);
+      setError('Erro ao carregar vendas');
     }
   };
 
@@ -129,7 +130,7 @@ const SalesScreen = () => {
         total: increment ? product.price : -product.price
       };
   
-      const response = await api.post('/api/sales', saleData);
+      const response = await api.post('/sales', saleData);
       
       // Atualizar o estado local
       setSales(prevSales => ({

@@ -26,12 +26,26 @@ export default function LoginScreen() {
     setError('');
 
     try {
+      console.log('Attempting login with email:', email);
       await signIn(email, password);
+      console.log('Login successful');
       // A navegação será feita automaticamente pelo AppNavigator
       // quando o estado de autenticação mudar
     } catch (error: any) {
       console.error('Login error:', error);
-      setError(error.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.');
+      console.error('Error response:', error.response);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
+      
+      if (error.response?.status === 404) {
+        setError('Servidor não encontrado. Verifique a conexão com a internet.');
+      } else if (error.response?.status === 401) {
+        setError('Email ou senha incorretos.');
+      } else if (error.response?.status >= 500) {
+        setError('Erro no servidor. Tente novamente mais tarde.');
+      } else {
+        setError(error.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.');
+      }
     } finally {
       setLoading(false);
     }

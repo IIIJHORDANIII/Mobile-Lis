@@ -7,10 +7,10 @@ import { User, Product, CustomList, Sale, AuthResponse } from '../types';
 // // const API_URL = 'http://10.0.2.2:3000';
 //
 // // Para iOS Simulator (atual)
-const API_URL = 'https://backend-lis-production.up.railway.app/api'; // Removido /api daqui
+const API_URL = 'https://backend-lis-production.up.railway.app/api'; // Base URL já inclui /api
 //
 // // Para dispositivo físico (substitua pelo IP da sua máquina)
-// // const API_URL = 'http://192.168.1.100:3000'; // Para dispositivo físico - Removido /api
+// // const API_URL = 'http://192.168.1.100:3000'; // Para dispositivo físico
 
 const api = axios.create({
   baseURL: API_URL,
@@ -51,7 +51,7 @@ api.interceptors.response.use(
 
 export const login = async (email: string, password: string) => {
   try {
-    const response = await api.post('/api/login', { email, password });
+    const response = await api.post('/login', { email, password });
     const { token, user } = response.data;
     await AsyncStorage.setItem('@LisMobile:token', token);
     return { token, user };
@@ -70,7 +70,7 @@ export const logout = async () => {
 
 export const getTasks = async () => {
   try {
-    const response = await api.get('/api/tasks');
+    const response = await api.get('/tasks');
     return response.data;
   } catch (error) {
     throw error;
@@ -79,7 +79,7 @@ export const getTasks = async () => {
 
 export const createTask = async (taskData: any) => {
   try {
-    const response = await api.post('/api/tasks', taskData);
+    const response = await api.post('/tasks', taskData);
     return response.data;
   } catch (error) {
     throw error;
@@ -89,7 +89,7 @@ export const createTask = async (taskData: any) => {
 // Products
 export const getProducts = async (): Promise<Product[]> => {
   try {
-    const response = await api.get('/api/products');
+    const response = await api.get('/products');
     return response.data;
   } catch (error) {
     throw error;
@@ -98,7 +98,7 @@ export const getProducts = async (): Promise<Product[]> => {
 
 export const createProduct = async (productData: FormData): Promise<Product> => {
   try {
-    const response = await api.post('/api/products', productData, {
+    const response = await api.post('/products', productData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -111,7 +111,7 @@ export const createProduct = async (productData: FormData): Promise<Product> => 
 
 export const updateProduct = async (id: string, productData: Partial<Product>): Promise<Product> => {
   try {
-    const response = await api.put(`/api/products/${id}`, productData);
+    const response = await api.put(`/products/${id}`, productData);
     return response.data;
   } catch (error) {
     throw error;
@@ -120,7 +120,7 @@ export const updateProduct = async (id: string, productData: Partial<Product>): 
 
 export const deleteProduct = async (id: string): Promise<void> => {
   try {
-    await api.delete(`/api/products/${id}`);
+    await api.delete(`/products/${id}`);
   } catch (error) {
     throw error;
   }
@@ -129,7 +129,7 @@ export const deleteProduct = async (id: string): Promise<void> => {
 // Custom Lists
 export const getCustomLists = async (): Promise<CustomList[]> => {
   try {
-    const response = await api.get('/api/custom-lists');
+    const response = await api.get('/custom-lists');
     return response.data;
   } catch (error) {
     throw error;
@@ -144,7 +144,7 @@ export const createCustomList = async (listData: {
   isPublic?: boolean;
 }): Promise<CustomList> => {
   try {
-    const response = await api.post('/api/custom-lists', listData);
+    const response = await api.post('/custom-lists', listData);
     return response.data;
   } catch (error) {
     throw error;
@@ -153,7 +153,7 @@ export const createCustomList = async (listData: {
 
 export const shareCustomList = async (listId: string, userIds: string[]): Promise<void> => {
   try {
-    await api.post(`/api/custom-lists/${listId}/share`, { userIds });
+    await api.post(`/custom-lists/${listId}/share`, { userIds });
   } catch (error) {
     throw error;
   }
@@ -162,7 +162,7 @@ export const shareCustomList = async (listId: string, userIds: string[]): Promis
 // Users
 export const getAllUsers = async (): Promise<User[]> => {
   try {
-    const response = await api.get('/api/users');
+    const response = await api.get('/users');
     return response.data;
   } catch (error) {
     throw error;
@@ -175,7 +175,7 @@ export const register = async (userData: {
   password: string;
 }): Promise<User> => {
   try {
-    const response = await api.post('/api/register', userData);
+    const response = await api.post('/register', userData);
     return response.data;
   } catch (error) {
     throw error;
@@ -188,7 +188,7 @@ export const createAdmin = async (userData: {
   password: string;
 }): Promise<User> => {
   try {
-    const response = await api.post('/api/admin', userData);
+    const response = await api.post('/admin', userData);
     return response.data;
   } catch (error) {
     throw error;
@@ -198,7 +198,7 @@ export const createAdmin = async (userData: {
 // Sales
 export const getSales = async (): Promise<Sale[]> => {
   try {
-    const response = await api.get('/api/sales');
+    const response = await api.get('/sales');
     return response.data;
   } catch (error) {
     throw error;
@@ -209,7 +209,7 @@ export const createSale = async (saleData: {
   products: { product: string; quantity: number }[];
 }): Promise<Sale> => {
   try {
-    const response = await api.post('/api/sales', saleData);
+    const response = await api.post('/sales', saleData);
     return response.data;
   } catch (error) {
     throw error;
@@ -218,7 +218,7 @@ export const createSale = async (saleData: {
 
 export const getSalesSummary = async (): Promise<any> => {
   try {
-    const response = await api.get('/api/sales/summary');
+    const response = await api.get('/sales/summary');
     return response.data;
   } catch (error) {
     throw error;
@@ -233,7 +233,7 @@ export const updateCustomList = async (listId: string, listData: {
   isPublic?: boolean;
 }): Promise<CustomList> => {
   try {
-    const response = await api.put(`/api/custom-lists/${listId}`, listData);
+    const response = await api.put(`/custom-lists/${listId}`, listData);
     return response.data;
   } catch (error) {
     throw error;
@@ -242,7 +242,7 @@ export const updateCustomList = async (listId: string, listData: {
 
 export const addProductToList = async (listId: string, productId: string): Promise<CustomList> => {
   try {
-    const response = await api.post(`/api/custom-lists/${listId}/products/${productId}`);
+    const response = await api.post(`/custom-lists/${listId}/products`, { productId });
     return response.data;
   } catch (error) {
     throw error;
@@ -251,7 +251,7 @@ export const addProductToList = async (listId: string, productId: string): Promi
 
 export const removeProductFromList = async (listId: string, productId: string): Promise<CustomList> => {
   try {
-    const response = await api.delete(`/api/custom-lists/${listId}/products/${productId}`);
+    const response = await api.delete(`/custom-lists/${listId}/products/${productId}`);
     return response.data;
   } catch (error) {
     throw error;

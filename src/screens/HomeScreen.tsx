@@ -31,15 +31,11 @@ export default function HomeScreen() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      setError('');
-      const response = await api.get('/api/products');
+      const response = await api.get('/products');
       setProducts(response.data);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          'Erro ao carregar produtos. Verifique sua conexão.';
-      setError(errorMessage);
-      setSnackbarVisible(true);
+      console.error('Erro ao carregar produtos:', error);
+      setError('Erro ao carregar produtos');
     } finally {
       setLoading(false);
     }
