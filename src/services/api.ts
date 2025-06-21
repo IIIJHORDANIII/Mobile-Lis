@@ -7,7 +7,7 @@ import { User, Product, CustomList, Sale, AuthResponse } from '../types';
 // // const API_URL = 'http://10.0.2.2:3000';
 //
 // // Para iOS Simulator (atual)
-const API_URL = 'http://localhost:3000'; // Removido /api daqui
+const API_URL = 'https://backend-lis-production.up.railway.app/api'; // Removido /api daqui
 //
 // // Para dispositivo físico (substitua pelo IP da sua máquina)
 // // const API_URL = 'http://192.168.1.100:3000'; // Para dispositivo físico - Removido /api
