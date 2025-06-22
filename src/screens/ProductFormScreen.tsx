@@ -56,7 +56,7 @@ export default function ProductFormScreen() {
         } as any);
       }
 
-      await api.post('/api/products', formData, {
+      await api.post('/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

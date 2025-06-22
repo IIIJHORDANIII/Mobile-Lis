@@ -1,7 +1,33 @@
 {
-  "name": "LisMobile",
-  "slug": "LisMobile",
-  "plugins": [
-    "expo-font"
-  ]
+  "expo": {
+    "name": "LisMobile",
+    "slug": "LisMobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./LisMobile/assets/LogoVector.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./LisMobile/assets/LogoVector.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./LisMobile/assets/LogoVector.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./LisMobile/assets/LogoVector.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
 }

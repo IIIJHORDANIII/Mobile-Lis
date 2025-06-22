@@ -62,7 +62,7 @@ export default function LoginScreen() {
       >
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../LisMobile/assets/Logo Vector.png')}
+            source={require('../../LisMobile/assets/LogoVector.png')}
             style={styles.logo}
             resizeMode="contain"
           />

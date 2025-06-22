@@ -45,7 +45,7 @@ const StockListScreen = ({ navigation }: StockListScreenProps) => {
   const loadLists = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/custom-lists');
+      const response = await api.get('/custom-lists');
       setLists(response.data);
       setError('');
     } catch (err) {
@@ -59,8 +59,8 @@ const StockListScreen = ({ navigation }: StockListScreenProps) => {
   const loadData = async () => {
     try {
       const [productsResponse, usersResponse] = await Promise.all([
-        api.get('/api/products'),
-        api.get('/api/users')
+        api.get('/products'),
+        api.get('/users')
       ]);
       setProducts(productsResponse.data);
       // Filtrar apenas usuários não administradores
@@ -94,7 +94,7 @@ const StockListScreen = ({ navigation }: StockListScreenProps) => {
     }
 
     try {
-      await api.post('/api/custom-lists', {
+      await api.post('/custom-lists', {
         name: newListName.trim(),
         products: selectedProducts,
         sharedWith: selectedUsers.map(user => user._id)
@@ -113,7 +113,7 @@ const StockListScreen = ({ navigation }: StockListScreenProps) => {
 
   const handleDeleteList = async (listId: string) => {
     try {
-      await api.delete(`/api/custom-lists/${listId}`);
+      await api.delete(`/custom-lists/${listId}`);
       loadLists();
     } catch (err) {
       console.error('Error deleting list:', err);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, Alert, Image } from 'react-native';
 import { Text, Card, Surface, ActivityIndicator, FAB, Portal, Modal, Button, IconButton } from 'react-native-paper';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { RouteProp } from '@react-navigation/native';
@@ -52,17 +52,22 @@ export default function CustomListDisplayScreen() {
     try {
       setLoading(true);
       const response = await api.get(`/custom-lists/${listId}`);
-      setList(response.data);
-      
-      // Carregar produtos da lista
-      if (response.data.products && response.data.products.length > 0) {
+      let listData = response.data;
+
+      // Se products for um array de IDs, buscar os objetos completos
+      if (Array.isArray(listData.products) && listData.products.length > 0 && typeof listData.products[0] === 'string') {
         const productsResponse = await api.get('/products');
         const allProducts = productsResponse.data;
-        const listProducts = allProducts.filter((product: Product) => 
-          response.data.products.includes(product._id)
-        );
-        setProducts(listProducts);
+        // Substitui os IDs pelos objetos completos
+        listData = {
+          ...listData,
+          products: allProducts.filter((product: Product) =>
+            listData.products.includes(product._id)
+          ),
+        };
       }
+
+      setList(listData);
     } catch (error: any) {
       console.error('Erro ao carregar lista:', error);
       setError('Erro ao carregar lista');
@@ -79,7 +84,7 @@ export default function CustomListDisplayScreen() {
   const loadAvailableProducts = async () => {
     try {
       setLoadingProducts(true);
-      const response = await api.get('/api/products');
+      const response = await api.get('/products');
       // Filter out products already in the list
       const filtered = response.data.filter((product: Product) => 
         !list?.products.some(listProduct => listProduct._id === product._id)
@@ -193,25 +198,34 @@ export default function CustomListDisplayScreen() {
           list.products.map((product) => (
             <Card key={product._id} style={styles.productCard}>
               <Card.Content>
-                <View style={styles.productHeader}>
-                  <Text style={styles.productName}>{product.name}</Text>
-                  <View style={styles.productActions}>
-                    <Text style={styles.productPrice}>{formatCurrency(product.price)}</Text>
-                    {editMode && isAdmin && (
-                      <IconButton
-                        icon="delete"
-                        size={20}
-                        iconColor="#d32f2f"
-                        onPress={() => handleRemoveProduct(product._id)}
-                      />
-                    )}
+                <View style={styles.productRow}>
+                  {product.image && (
+                    <Image
+                      source={{ uri: product.image }}
+                      style={styles.productImage}
+                      resizeMode="cover"
+                    />
+                  )}
+                  <View style={styles.productInfo}>
+                    <View style={styles.productHeader}>
+                      <Text style={styles.productName}>{product.name}</Text>
+                      <View style={styles.productActions}>
+                        <Text style={styles.productPrice}>{formatCurrency(product.price)}</Text>
+                        {editMode && isAdmin && (
+                          <IconButton
+                            icon="delete"
+                            size={20}
+                            iconColor="#d32f2f"
+                            onPress={() => handleRemoveProduct(product._id)}
+                          />
+                        )}
+                      </View>
+                    </View>
+                    <Text style={styles.productDescription}>{product.description}</Text>
+                    <View style={styles.productFooter}>
+                      <Text style={styles.quantityText}>Quantidade: {product.quantity}</Text>
+                    </View>
                   </View>
-                </View>
-                
-                <Text style={styles.productDescription}>{product.description}</Text>
-                
-                <View style={styles.productFooter}>
-                  <Text style={styles.quantityText}>Quantidade: {product.quantity}</Text>
                 </View>
               </Card.Content>
             </Card>
@@ -342,6 +356,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#fff',
     elevation: 3,
+  },
+  productRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  productImage: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    marginRight: 12,
+    backgroundColor: '#eee',
+  },
+  productInfo: {
+    flex: 1,
+    flexDirection: 'column',
   },
   productHeader: {
     flexDirection: 'row',

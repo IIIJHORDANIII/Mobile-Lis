@@ -42,11 +42,11 @@ const ProductListScreen = ({ navigation }: ProductListScreenProps) => {
       
       if (listId) {
         // Carregar produtos de uma lista específica
-        response = await api.get(`/api/custom-lists/${listId}`);
+        response = await api.get(`/custom-lists/${listId}`);
         setProducts(response.data.products || []);
       } else {
         // Carregar todos os produtos (comportamento original)
-        response = await api.get('/api/products');
+        response = await api.get('/products');
         setProducts(response.data);
       }
       
@@ -86,7 +86,7 @@ const ProductListScreen = ({ navigation }: ProductListScreenProps) => {
     if (!selectedProduct) return;
 
     try {
-      const response = await api.put(`/api/products/${selectedProduct._id}`, {
+      const response = await api.put(`/products/${selectedProduct._id}`, {
         name: editForm.name,
         description: editForm.description,
         price: parseFloat(editForm.price),
@@ -109,7 +109,7 @@ const ProductListScreen = ({ navigation }: ProductListScreenProps) => {
 
   const handleDeleteClick = async (productId: string) => {
     try {
-      await api.delete(`/api/products/${productId}`);
+      await api.delete(`/products/${productId}`);
       setProducts(products.filter(p => p._id !== productId));
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 
