@@ -2,16 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
 import { Text, Button, Card, Dialog, Portal, TextInput, List, Checkbox, ActivityIndicator, Surface } from 'react-native-paper';
 import { NavigationProps } from '../types/navigation';
+import { Product } from '../types';
 import Header from '../components/Header';
 import { api } from '../services/api';
-
-type Product = {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-};
 
 type User = {
   _id: string;

@@ -4,18 +4,10 @@ import { Text, Button, Card, Surface, ActivityIndicator, Snackbar } from 'react-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { Product } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import { api } from '../services/api';
-
-type Product = {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-  image: string;
-};
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -23,6 +15,8 @@ export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const { user, isAdmin, signOut } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -33,6 +27,7 @@ export default function HomeScreen() {
       setLoading(true);
       const response = await api.get('/products');
       setProducts(response.data);
+      setError('');
     } catch (error: any) {
       console.error('Erro ao carregar produtos:', error);
       setError('Erro ao carregar produtos');
@@ -57,6 +52,19 @@ export default function HomeScreen() {
       ]
     );
   };
+
+  const handleCategoryFilter = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  // Filtrar produtos quando selectedCategory ou products mudarem
+  useEffect(() => {
+    if (selectedCategory === 'all') {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(products.filter(product => product.category === selectedCategory));
+    }
+  }, [selectedCategory, products]);
 
   useEffect(() => {
     loadProducts();
@@ -157,6 +165,80 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Header title="Produtos" showLogout={true} />
       
+      {/* Botões de filtro por categoria */}
+      <View style={styles.filterContainer}>
+        <Text style={styles.filterTitle}>Filtrar por categoria:</Text>
+        <View style={styles.filterButtonsContainer}>
+          <Button
+            mode={selectedCategory === 'all' ? 'contained' : 'outlined'}
+            onPress={() => handleCategoryFilter('all')}
+            style={[
+              styles.filterButton,
+              selectedCategory === 'all' && styles.filterButtonSelected
+            ]}
+            labelStyle={[
+              styles.filterButtonLabel,
+              selectedCategory === 'all' && styles.filterButtonLabelSelected
+            ]}
+            buttonColor="#383A29"
+            textColor={selectedCategory === 'all' ? '#d9d9d9' : '#383A29'}
+          >
+            Todos
+          </Button>
+          <Button
+            mode={selectedCategory === 'masculino' ? 'contained' : 'outlined'}
+            onPress={() => handleCategoryFilter('masculino')}
+            style={[
+              styles.filterButton,
+              selectedCategory === 'masculino' && styles.filterButtonSelected
+            ]}
+            labelStyle={[
+              styles.filterButtonLabel,
+              selectedCategory === 'masculino' && styles.filterButtonLabelSelected
+            ]}
+            buttonColor="#383A29"
+            textColor={selectedCategory === 'masculino' ? '#d9d9d9' : '#383A29'}
+          >
+            Masculino
+          </Button>
+          <Button
+            mode={selectedCategory === 'feminino' ? 'contained' : 'outlined'}
+            onPress={() => handleCategoryFilter('feminino')}
+            style={[
+              styles.filterButton,
+              selectedCategory === 'feminino' && styles.filterButtonSelected
+            ]}
+            labelStyle={[
+              styles.filterButtonLabel,
+              selectedCategory === 'feminino' && styles.filterButtonLabelSelected
+            ]}
+            buttonColor="#383A29"
+            textColor={selectedCategory === 'feminino' ? '#d9d9d9' : '#383A29'}
+          >
+            Feminino
+          </Button>
+          <Button
+            mode={selectedCategory === 'infantil' ? 'contained' : 'outlined'}
+            onPress={() => handleCategoryFilter('infantil')}
+            style={[
+              styles.filterButton,
+              selectedCategory === 'infantil' && styles.filterButtonSelected
+            ]}
+            labelStyle={[
+              styles.filterButtonLabel,
+              selectedCategory === 'infantil' && styles.filterButtonLabelSelected
+            ]}
+            buttonColor="#383A29"
+            textColor={selectedCategory === 'infantil' ? '#d9d9d9' : '#383A29'}
+          >
+            Infantil
+          </Button>
+        </View>
+        <Text style={styles.productCount}>
+          {filteredProducts.length} produto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
+        </Text>
+      </View>
+      
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2196F3" />
@@ -179,16 +261,21 @@ export default function HomeScreen() {
         >
           {renderAdminMenu()}
           
-          {products.length === 0 ? (
+          {filteredProducts.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Nenhum produto encontrado</Text>
-              <Text style={styles.emptySubtext}>Verifique sua conexão ou tente novamente</Text>
+              <Text style={styles.emptySubtext}>
+                {selectedCategory === 'all' 
+                  ? 'Verifique sua conexão ou tente novamente' 
+                  : `Nenhum produto na categoria "${selectedCategory}" encontrado`
+                }
+              </Text>
               <Button mode="contained" onPress={loadProducts} style={styles.retryButton}>
                 Recarregar
               </Button>
             </View>
           ) : (
-            products.map((product, index) => renderProductCard(product, index))
+            filteredProducts.map((product, index) => renderProductCard(product, index))
           )}
         </ScrollView>
       )}
@@ -382,5 +469,74 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     backgroundColor: '#2196F3',
+  },
+  filterContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 20,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 12,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(56, 58, 41, 0.1)',
+  },
+  filterTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#383A29',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  filterButtonsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  filterButton: {
+    backgroundColor: 'transparent',
+    borderColor: '#383A29',
+    borderWidth: 2,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    minHeight: 44,
+    width: '48%',
+    marginBottom: 8,
+  },
+  filterButtonSelected: {
+    backgroundColor: '#383A29',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  filterButtonLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#383A29',
+    textTransform: 'none',
+  },
+  filterButtonLabelSelected: {
+    color: '#d9d9d9',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  productCount: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 16,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

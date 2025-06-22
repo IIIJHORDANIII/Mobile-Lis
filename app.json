@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "LisMobile",
-    "slug": "LisMobile",
+  "name": "LisMobile",
+  "slug": "LisMobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./LisMobile/assets/LogoVector.png",
@@ -26,8 +26,8 @@
     "web": {
       "favicon": "./LisMobile/assets/LogoVector.png"
     },
-    "plugins": [
-      "expo-font"
-    ]
+  "plugins": [
+    "expo-font"
+  ]
   }
 }

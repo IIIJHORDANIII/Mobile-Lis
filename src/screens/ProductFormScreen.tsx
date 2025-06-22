@@ -15,6 +15,7 @@ export default function ProductFormScreen() {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [category, setCategory] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -34,7 +35,7 @@ export default function ProductFormScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!name || !description || !price || !quantity) {
+    if (!name || !description || !price || !quantity || !category) {
       setError('Por favor, preencha todos os campos');
       return;
     }
@@ -48,6 +49,7 @@ export default function ProductFormScreen() {
       formData.append('description', description);
       formData.append('price', price);
       formData.append('quantity', quantity);
+      formData.append('category', category);
       if (image) {
         formData.append('image', {
           uri: image,
@@ -121,6 +123,60 @@ export default function ProductFormScreen() {
               style={styles.input}
               keyboardType="numeric"
             />
+
+            <View style={styles.categoryContainer}>
+              <Text style={styles.categoryLabel}>Classificação:</Text>
+              <View style={styles.categoryButtonsContainer}>
+                <Button
+                  mode={category === 'masculino' ? 'contained' : 'outlined'}
+                  onPress={() => setCategory('masculino')}
+                  style={[
+                    styles.categoryButton,
+                    category === 'masculino' && styles.categoryButtonSelected
+                  ]}
+                  labelStyle={[
+                    styles.categoryButtonLabel,
+                    category === 'masculino' && styles.categoryButtonLabelSelected
+                  ]}
+                  buttonColor="#383A29"
+                  textColor={category === 'masculino' ? '#d9d9d9' : '#383A29'}
+                >
+                  Masculino
+                </Button>
+                <Button
+                  mode={category === 'feminino' ? 'contained' : 'outlined'}
+                  onPress={() => setCategory('feminino')}
+                  style={[
+                    styles.categoryButton,
+                    category === 'feminino' && styles.categoryButtonSelected
+                  ]}
+                  labelStyle={[
+                    styles.categoryButtonLabel,
+                    category === 'feminino' && styles.categoryButtonLabelSelected
+                  ]}
+                  buttonColor="#383A29"
+                  textColor={category === 'feminino' ? '#d9d9d9' : '#383A29'}
+                >
+                  Feminino
+                </Button>
+                <Button
+                  mode={category === 'infantil' ? 'contained' : 'outlined'}
+                  onPress={() => setCategory('infantil')}
+                  style={[
+                    styles.categoryButton,
+                    category === 'infantil' && styles.categoryButtonSelected
+                  ]}
+                  labelStyle={[
+                    styles.categoryButtonLabel,
+                    category === 'infantil' && styles.categoryButtonLabelSelected
+                  ]}
+                  buttonColor="#383A29"
+                  textColor={category === 'infantil' ? '#d9d9d9' : '#383A29'}
+                >
+                  Infantil
+                </Button>
+              </View>
+            </View>
 
             <Button
               mode="outlined"
@@ -206,5 +262,68 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 14,
     fontWeight: '500',
+  },
+  categoryContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(56, 58, 41, 0.1)',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  categoryLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#383A29',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  categoryButtonsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  categoryButton: {
+    backgroundColor: 'transparent',
+    borderColor: '#383A29',
+    borderWidth: 2,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    minHeight: 44,
+    flex: 1,
+  },
+  categoryButtonSelected: {
+    backgroundColor: '#383A29',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  categoryButtonLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#383A29',
+    textTransform: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  categoryButtonLabelSelected: {
+    color: '#d9d9d9',
+    padding: 0,
+    margin: 0,
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

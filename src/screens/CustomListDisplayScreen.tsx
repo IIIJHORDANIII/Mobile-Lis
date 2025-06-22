@@ -142,8 +142,7 @@ export default function CustomListDisplayScreen() {
       <View style={styles.container}>
         <Header title="Lista Personalizada" showBackButton={true} />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" />
-          <Text style={styles.loadingText}>Carregando lista...</Text>
+          <ActivityIndicator size="large" color="#d9d9d9" />
         </View>
       </View>
     );
@@ -318,13 +317,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#d9d9d9',
-  },
-  loadingText: {
-    marginTop: 16,
-    textAlign: 'center',
-    color: '#383A29',
-    fontSize: 16,
+    backgroundColor: '#383A29',
   },
   errorContainer: {
     flex: 1,
